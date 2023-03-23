@@ -6,7 +6,7 @@
 /*   By: oroy <oroy@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 14:44:11 by oroy              #+#    #+#             */
-/*   Updated: 2023/03/22 20:04:41 by oroy             ###   ########.fr       */
+/*   Updated: 2023/03/22 20:24:40 by oroy             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,23 +42,26 @@ void	*ft_calloc(size_t count, size_t size)
 
 char	*ft_strdup_gnl(char *buf, char *tmp)
 {
+	char	*newtmp;
 	size_t	i;
 
 	if (!buf)
 		return (NULL);
 	i = 0;
-	if (tmp)
-		tmp = freeline(tmp);
-	tmp = ft_calloc(ft_strlen(buf) + 1, sizeof(char));
-	if (!tmp)
-		return (NULL);
-	while (buf[i])
+	newtmp = ft_calloc(ft_strlen(buf) + 1, sizeof(char));
+	if (newtmp)
 	{
-		tmp[i] = buf[i];
-		i++;
+		while (buf[i])
+		{
+			newtmp[i] = buf[i];
+			i++;
+		}
+		newtmp[i] = '\0';
 	}
-	tmp[i] = '\0';
-	return (tmp);
+	tmp = freeline(tmp);
+	if (!newtmp)
+		return (NULL);
+	return (newtmp);
 }
 
 char	*ft_strjoin_gnl(char *newline, char *line, char *buf, size_t len)
