@@ -6,18 +6,11 @@
 /*   By: oroy <oroy@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/14 14:44:11 by oroy              #+#    #+#             */
-/*   Updated: 2023/03/22 20:24:40 by oroy             ###   ########.fr       */
+/*   Updated: 2023/03/23 18:54:54 by oroy             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
-
-char	*freeline(char *line)
-{
-	if (line)
-		free (line);
-	return (NULL);
-}
 
 void	*ft_calloc(size_t count, size_t size)
 {
@@ -38,30 +31,6 @@ void	*ft_calloc(size_t count, size_t size)
 		i++;
 	}
 	return (mem);
-}
-
-char	*ft_strdup_gnl(char *buf, char *tmp)
-{
-	char	*newtmp;
-	size_t	i;
-
-	if (!buf)
-		return (NULL);
-	i = 0;
-	newtmp = ft_calloc(ft_strlen(buf) + 1, sizeof(char));
-	if (newtmp)
-	{
-		while (buf[i])
-		{
-			newtmp[i] = buf[i];
-			i++;
-		}
-		newtmp[i] = '\0';
-	}
-	tmp = freeline(tmp);
-	if (!newtmp)
-		return (NULL);
-	return (newtmp);
 }
 
 char	*ft_strjoin_gnl(char *newline, char *line, char *buf, size_t len)
@@ -94,5 +63,23 @@ size_t	ft_strlen(const char *s)
 	i = 0;
 	while (s[i])
 		i++;
+	return (i);
+}
+
+size_t	getbuflength(char *buf, unsigned char *n)
+{
+	size_t	i;
+
+	i = 0;
+	while (buf[i])
+	{
+		if (buf[i] == '\n')
+		{
+			*n = 1;
+			i++;
+			return (i);
+		}
+		i++;
+	}
 	return (i);
 }

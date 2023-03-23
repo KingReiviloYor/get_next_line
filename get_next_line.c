@@ -6,7 +6,7 @@
 /*   By: oroy <oroy@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/17 14:10:17 by oroy              #+#    #+#             */
-/*   Updated: 2023/03/22 20:06:45 by oroy             ###   ########.fr       */
+/*   Updated: 2023/03/23 17:29:46 by oroy             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,13 @@ static char	*freeline(char *line)
 	return (NULL);
 }
 
+static char	*checkreaderror(ssize_t readvalue, char *line)
+{
+	if (readvalue == -1)
+		line = freeline(line);
+	return (line);
+}
+
 static char	*createline(char *line, char *buf, size_t *i, unsigned char *n)
 {
 	char	*newline;
@@ -27,10 +34,12 @@ static char	*createline(char *line, char *buf, size_t *i, unsigned char *n)
 	len = getbuflength(&buf[*i], n);
 	newline = ft_calloc(ft_strlen(line) + len + 1, sizeof(char));
 	if (newline)
+	{
 		newline = ft_strjoin_gnl(newline, line, &buf[*i], len);
-	*i += len;
-	if (!buf[*i])
-		*i = 0;
+		*i += len;
+		if (!buf[*i])
+			*i = 0;
+	}
 	line = freeline(line);
 	if (!newline)
 		return (NULL);
@@ -49,19 +58,19 @@ char	*get_next_line(int fd)
 		return (NULL);
 	line = NULL;
 	n = 0;
-	readvalue = BUFFER_SIZE;
-	while (!n && readvalue == BUFFER_SIZE)
+	while (!n)
 	{
 		if (i == 0)
 		{
 			readvalue = read(fd, buf, BUFFER_SIZE);
-			if (readvalue == -1)
-				line = freeline(line);
+			line = checkreaderror(readvalue, line);
 			if (readvalue <= 0)
 				break ;
 			buf[readvalue] = '\0';
 		}
 		line = createline(line, buf, &i, &n);
+		if (!line)
+			break ;
 	}
 	return (line);
 }

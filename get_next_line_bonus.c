@@ -6,48 +6,40 @@
 /*   By: oroy <oroy@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/17 14:10:17 by oroy              #+#    #+#             */
-/*   Updated: 2023/03/22 20:31:27 by oroy             ###   ########.fr       */
+/*   Updated: 2023/03/23 19:02:58 by oroy             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-static size_t	getbuflength(char *buf, unsigned char *n)
+static char	*freeline(char *line)
 {
-	size_t	i;
-
-	i = 0;
-	while (buf[i])
-	{
-		if (buf[i] == '\n')
-		{
-			*n = 1;
-			i++;
-			return (i);
-		}
-		i++;
-	}
-	return (i);
+	if (line)
+		free (line);
+	return (NULL);
 }
 
-static char	*createline(char *line, char *buf, char **tmp, unsigned char *n)
+static char	*checkreaderror(ssize_t readvalue, char *line)
+{
+	if (readvalue == -1)
+		line = freeline(line);
+	return (line);
+}
+
+static char	*createline(char *line, char *buf, size_t *i, unsigned char *n)
 {
 	char	*newline;
-	char	*ptr;
 	size_t	len;
 
-	if (*tmp)
-		ptr = *tmp;
-	else
-		ptr = buf;
-	len = getbuflength(ptr, n);
+	len = getbuflength(&buf[*i], n);
 	newline = ft_calloc(ft_strlen(line) + len + 1, sizeof(char));
 	if (newline)
-		newline = ft_strjoin_gnl(newline, line, ptr, len);
-	if (ptr[len])
-		*tmp = ft_strdup_gnl(&ptr[len], *tmp);
-	else
-		*tmp = freeline(*tmp);
+	{
+		newline = ft_strjoin_gnl(newline, line, &buf[*i], len);
+		*i += len;
+		if (!buf[*i])
+			*i = 0;
+	}
 	line = freeline(line);
 	if (!newline)
 		return (NULL);
@@ -56,29 +48,28 @@ static char	*createline(char *line, char *buf, char **tmp, unsigned char *n)
 
 char	*get_next_line(int fd)
 {
-	char			buf[BUFFER_SIZE + 1];
+	static t_buf	list[OPEN_MAX];
 	ssize_t			readvalue;
 	char			*line;
-	static char		*tmp;
 	unsigned char	n;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	line = NULL;
 	n = 0;
-	readvalue = BUFFER_SIZE;
-	while (!n && readvalue == BUFFER_SIZE)
+	while (!n)
 	{
-		if (!tmp)
+		if (list[fd].i == 0)
 		{
-			readvalue = read(fd, buf, BUFFER_SIZE);
-			if (readvalue == -1)
-				line = freeline(line);
+			readvalue = read(fd, list[fd].buf, BUFFER_SIZE);
+			line = checkreaderror(readvalue, line);
 			if (readvalue <= 0)
 				break ;
-			buf[readvalue] = '\0';
+			list[fd].buf[readvalue] = '\0';
 		}
-		line = createline(line, buf, &tmp, &n);
+		line = createline(line, list[fd].buf, &list[fd].i, &n);
+		if (!line)
+			break ;
 	}
 	return (line);
 }

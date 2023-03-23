@@ -6,7 +6,7 @@
 /*   By: oroy <oroy@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 16:29:41 by oroy              #+#    #+#             */
-/*   Updated: 2023/03/22 14:50:51 by oroy             ###   ########.fr       */
+/*   Updated: 2023/03/23 18:56:05 by oroy             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@
 # include <sys/types.h>
 # include <unistd.h>
 # include <stdlib.h>
+
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 42
+# endif
 
 void	*ft_calloc(size_t count, size_t size);
 char	*ft_strjoin_gnl(char *newline, char *line, char *buf, size_t buf_len);
